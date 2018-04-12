@@ -34,19 +34,12 @@
 #include "stm32f0xx_hal.h"
 #include "stm32f0xx.h"
 #include "stm32f0xx_it.h"
-#include "stm32f0xx_hal_gpio.h"
-
+#include "wiegand.h"
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-#define MAX_BITS 26
-extern unsigned char databits[MAX_BITS];    // stores all of the data bits
-extern unsigned int bitCount;              // number of bits currently captured
-extern unsigned int facilityCode;        // decoded facility code
-extern unsigned int cardCode;            // decoded card code
-int i = 0;
 /******************************************************************************/
 /*            Cortex-M0 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
@@ -138,28 +131,7 @@ void SysTick_Handler(void)
 void EXTI4_15_IRQHandler(void){
 	/* USER CODE BEGIN EXTI4_15_IRQn 0 */
 
-	if((HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_4) == 0)){
-			bitCount++;
-			while((HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_4) == 0));
-			//USART1_PutString("0");
-		}if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0){
-			//USART1_PutString("1");
-			databits[bitCount] = 1;
-			bitCount++;
-			while((HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0));
-		}if(bitCount == 26){
-			// facility code = bits 2 to 9
-			for (i=1; i<9; i++){
-				facilityCode <<=1;
-				facilityCode |= databits[i];
-			}
-
-			// card code = bits 10 to 23
-			for (i=9; i<25; i++){
-				cardCode <<=1;
-				cardCode |= databits[i];
-			}
-		}
+	wiegand();
 	/* USER CODE END EXTI4_15_IRQn 0 */
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);

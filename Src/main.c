@@ -40,6 +40,7 @@
 #include "main.h"
 #include "stm32f0xx_hal.h"
 #include "printBits.h"
+#include "wiegand.h"
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -107,7 +108,6 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  int i = 0;
   char buffer[30];
   sprintf(buffer, "Read RFID\r\n");
   HAL_UART_Transmit(&huart1,buffer, strlen(buffer), 1000);
@@ -117,12 +117,7 @@ int main(void)
 	if(bitCount == 26){
 		printBits(&huart1,facilityCode, cardCode);
 		// cleanup and get ready for the next card
-		bitCount = 0;
-		facilityCode = 0;
-		cardCode = 0;
-		for (i=0; i<MAX_BITS; i++){
-			databits[i] = 0;
-		}
+		clear_vars();
 	}
   /* USER CODE BEGIN 3 */
 
